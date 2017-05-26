@@ -161,9 +161,9 @@ public class BNode implements BNodeInterface {
     @Override
     public Block search(int key) {
         int i = 0;
-        while (i < this.numOfBlocks && key > this.getBlockKeyAt(i)) {
+        while (i < this.numOfBlocks && key > this.getBlockKeyAt(i))
             i++;
-        }
+
         if (i < this.numOfBlocks && key == this.getBlockKeyAt(i))
             return this.getBlockAt(i);
         else if (this.isLeaf)
@@ -191,4 +191,122 @@ public class BNode implements BNodeInterface {
     }
 
 
+    /**
+     * Splits the child node at childIndex into 2 nodes.
+     *
+     * @param childIndex
+     */
+    public void splitChild(int childIndex) {
+
+    }
+
+    /**
+     * True if the child node at childIndx-1 exists and has more than t-1 blocks.
+     *
+     * @param childIndx
+     * @return
+     */
+    private boolean childHasNonMinimalLeftSibling(int childIndx) {
+        return numOfBlocks >= childIndx - 1 && getChildAt(childIndx - 1).getNumOfBlocks() > t - 1;
+    }
+
+    /**
+     * True if the child node at childIndx+1 exists and has more than t-1 blocks.
+     *
+     * @param childIndx
+     * @return
+     */
+    private boolean childHasNonMinimalRightSibling(int childIndx) {
+        return numOfBlocks >= childIndx + 1 && getChildAt(childIndx + 1).getNumOfBlocks() > t - 1;
+    }
+
+    /**
+     * Verifies the child node at childIndx has at least t blocks.<br>
+     * If necessary a shift or merge is performed.
+     *
+     * @param childIndx
+     */
+    private void shiftOrMergeChildIfNeeded(int childIndx) {
+
+    }
+
+    /**
+     * Add additional block to the child node at childIndx, by shifting from left sibling.
+     *
+     * @param childIndx
+     */
+    private void shiftFromLeftSibling(int childIndx) {
+
+    }
+
+    /**
+     * Add additional block to the child node at childIndx, by shifting from right sibling.
+     *
+     * @param childIndx
+     */
+    private void shiftFromRightSibling(int childIndx) {
+
+    }
+
+    /**
+     * Merges the child node at childIndx with its left or right sibling.
+     *
+     * @param childIndx
+     */
+    private void mergeChildWithSibling(int childIndx) {
+        if (!childHasNonMinimalLeftSibling(childIndx))
+            mergeWithLeftSibling(childIndx);
+        else if (!childHasNonMinimalRightSibling(childIndx))
+            mergeWithRightSibling(childIndx);
+    }
+
+    /**
+     * Merges the child node at childIndx with its left sibling.<br>
+     * The left sibling node is removed.
+     *
+     * @param childIndx
+     */
+    private void mergeWithLeftSibling(int childIndx) {
+        BNode child = childrenList.get(childIndx);
+        BNode leftSibling = childrenList.get(childIndx - 1);
+        for (int i = 0; i < leftSibling.getNumOfBlocks(); i++)
+            child.getBlocksList().add(i, leftSibling.getBlockAt(i));
+        childrenList.remove(childIndx - 1); // remove leftSibling
+    }
+
+    /**
+     * Merges the child node at childIndx with its right sibling.<br>
+     * The right sibling node is removed.
+     *
+     * @param childIndx
+     */
+    private void mergeWithRightSibling(int childIndx) {
+        BNode child = childrenList.get(childIndx);
+        BNode rightSibling = childrenList.get(childIndx + 1);
+        for (int i = 0; i < rightSibling.getNumOfBlocks(); i++)
+            child.getBlocksList().add(rightSibling.getBlockAt(i));
+        childrenList.remove(childIndx + 1); // remove rightSibling
+    }
+
+    /**
+     * Finds and returns the block with the min key in the subtree.
+     *
+     * @return min key block
+     */
+    private Block getMinKeyBlock() {
+        if (isLeaf)
+            return getBlockAt(0);
+        return getChildAt(0).getMinKeyBlock();
+    }
+
+    /**
+     * Finds and returns the block with the max key in the subtree.
+     *
+     * @return max key block
+     */
+    private Block getMaxKeyBlock() {
+        if (isLeaf)
+            return getBlockAt(numOfBlocks - 1);
+        return getChildAt(numOfBlocks).getMaxKeyBlock();
+    }
 }
