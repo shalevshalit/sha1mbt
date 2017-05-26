@@ -173,9 +173,22 @@ public class BNode implements BNodeInterface {
     }
 
     @Override
-    public void insertNonFull(Block d) {
-        // TODO Auto-generated method stub
+    public void insertNonFull(Block b) {
+        int i = 0;
+        while (i < numOfBlocks && b.getKey() < getBlockKeyAt(i))
+            i++;
+        if (isLeaf) {
+            blocksList.add(i, b);
+            numOfBlocks++;
+        } else {
+            if (getChildAt(i).isFull())
+                splitChild(i);
 
+            if (b.getKey() < getBlockKeyAt(i))
+                getChildAt(i).insertNonFull(b);
+            else
+                getChildAt(i + 1).insertNonFull(b);
+        }
     }
 
     @Override
@@ -197,7 +210,16 @@ public class BNode implements BNodeInterface {
      * @param childIndex
      */
     public void splitChild(int childIndex) {
-
+        BNode child = getChildAt(childIndex);
+        BNode newChild = new BNode(t, child.isLeaf, t - 1);
+        for (int i = 0; i < t - 1; i++)
+            newChild.blocksList.add(child.getBlockAt(t + i));
+        if (!child.isLeaf)
+            for (int j = 0; j < t; j++)
+                newChild.childrenList.add(child.getChildAt(t + j));
+        blocksList.add(childIndex, child.getBlockAt(t - 1));
+        childrenList.add(childIndex + 1, newChild);
+        child.numOfBlocks = t - 1;
     }
 
     /**
