@@ -207,7 +207,7 @@ public class BNode implements BNodeInterface {
      * @return
      */
     private boolean childHasNonMinimalLeftSibling(int childIndx) {
-        return numOfBlocks >= childIndx - 1 && getChildAt(childIndx - 1).getNumOfBlocks() > t - 1;
+        return numOfBlocks >= childIndx - 1 && childIndx > 0 && getChildAt(childIndx - 1).getNumOfBlocks() > t - 1;
     }
 
     /**
@@ -269,6 +269,7 @@ public class BNode implements BNodeInterface {
     private void mergeWithLeftSibling(int childIndx) {
         BNode child = childrenList.get(childIndx);
         BNode leftSibling = childrenList.get(childIndx - 1);
+        // TODO add father
         for (int i = 0; i < leftSibling.getNumOfBlocks(); i++)
             child.getBlocksList().add(i, leftSibling.getBlockAt(i));
         childrenList.remove(childIndx - 1); // remove leftSibling
@@ -283,6 +284,7 @@ public class BNode implements BNodeInterface {
     private void mergeWithRightSibling(int childIndx) {
         BNode child = childrenList.get(childIndx);
         BNode rightSibling = childrenList.get(childIndx + 1);
+        // TODO add father
         for (int i = 0; i < rightSibling.getNumOfBlocks(); i++)
             child.getBlocksList().add(rightSibling.getBlockAt(i));
         childrenList.remove(childIndx + 1); // remove rightSibling

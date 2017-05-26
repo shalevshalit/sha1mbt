@@ -66,7 +66,10 @@ public class BTree implements BTreeInterface {
 
     @Override
     public Block search(int key) {
-        return this.root.search(key);
+        if (root == null)
+            return null;
+        else
+            return this.root.search(key);
     }
 
     @Override
