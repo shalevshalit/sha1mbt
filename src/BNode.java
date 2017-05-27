@@ -358,7 +358,7 @@ public class BNode implements BNodeInterface {
             leftChild.childrenList.add(rightChild.getChildAt(i));
         }
         leftChild.childrenList.add(rightChild.getChildAt(rightChild.numOfBlocks));
-        childrenList.remove(childIndx + 1); // remove leftChild
+        childrenList.remove(childIndx + 1); // remove rightChild
     }
 
     /**
