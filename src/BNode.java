@@ -258,7 +258,25 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void shiftFromLeftSibling(int childIndx) {
+        BNode rightChild = getChildAt(childIndx);
+        BNode leftChild = getChildAt(childIndx - 1);
 
+        // move parent block to right child
+        Block parentMovingBlock = getBlockAt(childIndx);
+        rightChild.blocksList.add(0, parentMovingBlock);
+        blocksList.remove(childIndx);
+        rightChild.numOfBlocks++;
+
+        // move left max child to min right child
+        BNode leftChildMaxChild = leftChild.getChildAt(leftChild.numOfBlocks);
+        rightChild.childrenList.add(0, leftChildMaxChild);
+        leftChild.childrenList.remove(leftChild.numOfBlocks);
+
+        // move left max block to parent
+        Block leftChildMaxBlock = leftChild.getBlockAt(leftChild.numOfBlocks - 1);
+        blocksList.add(childIndx, leftChildMaxBlock);
+        leftChild.blocksList.remove(leftChild.numOfBlocks - 1);
+        leftChild.numOfBlocks--;
     }
 
     /**
@@ -267,6 +285,25 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void shiftFromRightSibling(int childIndx) {
+        BNode leftChild = getChildAt(childIndx);
+        BNode rightChild = getChildAt(childIndx + 1);
+
+        // move parent block to left child
+        Block parentMovingBlock = getBlockAt(childIndx);
+        leftChild.blocksList.add(leftChild.numOfBlocks - 1, parentMovingBlock);
+        blocksList.remove(childIndx);
+        leftChild.numOfBlocks++;
+
+        // move right min child to max right child
+        BNode rightChildMinChild = rightChild.getChildAt(0);
+        leftChild.childrenList.add(leftChild.numOfBlocks, rightChildMinChild);
+        rightChild.childrenList.remove(0);
+
+        // move right min block to parent
+        Block rightChildMinBlock = rightChild.getBlockAt(0);
+        blocksList.add(childIndx, rightChildMinBlock);
+        rightChild.blocksList.remove(0);
+        rightChild.numOfBlocks--;
 
     }
 
