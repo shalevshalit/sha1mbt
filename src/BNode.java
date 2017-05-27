@@ -176,19 +176,22 @@ public class BNode implements BNodeInterface {
     @Override
     public void insertNonFull(Block b) {
         int i = 0;
-        while (i < numOfBlocks && b.getKey() < getBlockKeyAt(i))
+        while (i < numOfBlocks && getBlockKeyAt(i) < b.getKey())
             i++;
+
         if (isLeaf) {
             blocksList.add(i, b);
             numOfBlocks++;
         } else {
-            if (getChildAt(i).isFull())
+            if (getChildAt(i).isFull()) {
                 splitChild(i);
 
-            if (b.getKey() < getBlockKeyAt(i))
+                if (b.getKey() < getBlockKeyAt(i))
+                    getChildAt(i).insertNonFull(b);
+                else
+                    getChildAt(i + 1).insertNonFull(b);
+            } else
                 getChildAt(i).insertNonFull(b);
-            else
-                getChildAt(i + 1).insertNonFull(b);
         }
     }
 
@@ -248,8 +251,10 @@ public class BNode implements BNodeInterface {
         if (!child.isLeaf)
             for (int j = 0; j < t; j++)
                 newChild.childrenList.add(child.getChildAt(t + j));
+
         blocksList.add(childIndex, child.getBlockAt(t - 1));
         childrenList.add(childIndex + 1, newChild);
+        numOfBlocks++;
         child.numOfBlocks = t - 1;
     }
 
