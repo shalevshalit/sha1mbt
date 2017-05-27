@@ -88,8 +88,7 @@ public class BTree implements BTreeInterface {
 
     @Override
     public void delete(int key) {
-        // TODO Auto-generated method stub
-
+        root.delete(key);
     }
 
     @Override

@@ -202,19 +202,18 @@ public class BNode implements BNodeInterface {
             i++;
 
         if (isLeaf) {
-            if (getBlockKeyAt(i) == key) {
+            if (i < numOfBlocks && getBlockKeyAt(i) == key) {
                 blocksList.remove(i);
                 numOfBlocks--;
             }
         } else {
-            if (getBlockKeyAt(i) == key) {
-                BNode leftChild = getChildAt(i); // TODO check if child exists
-                BNode rightChild = getChildAt(i + 1); // TODO check if child exists
+            if (i < numOfBlocks && getBlockKeyAt(i) == key) {
+                BNode leftChild = getChildAt(i);
+                BNode rightChild = getChildAt(i + 1);
 
                 if (leftChild.isMinSize() && rightChild.isMinSize())
-                    mergeChildWithSibling(i);
-
-                if (!leftChild.isMinSize()) {
+                    mergeWithRightSibling(i);
+                else if (!leftChild.isMinSize()) {
                     Block childMax = leftChild.getMaxKeyBlock();
                     blocksList.remove(i);
                     blocksList.add(i, childMax);
