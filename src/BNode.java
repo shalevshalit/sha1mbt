@@ -256,12 +256,12 @@ public class BNode implements BNodeInterface {
         BNode child = getChildAt(childIndex);
         BNode newChild = new BNode(t, child.isLeaf, t - 1);
         for (int i = 0; i < t - 1; i++)
-            newChild.blocksList.add(child.getBlockAt(t + i));
+            newChild.blocksList.add(child.blocksList.remove(t));
         if (!child.isLeaf)
             for (int j = 0; j < t; j++)
-                newChild.childrenList.add(child.getChildAt(t + j));
+                newChild.childrenList.add(child.childrenList.remove(t));
 
-        blocksList.add(childIndex, child.getBlockAt(t - 1));
+        blocksList.add(childIndex, child.blocksList.remove(t - 1));
         childrenList.add(childIndex + 1, newChild);
         numOfBlocks++;
         child.numOfBlocks = t - 1;
@@ -371,7 +371,7 @@ public class BNode implements BNodeInterface {
      *
      * @param childIndx
      */
-    private void mergeWithLeftSibling(int childIndx) {
+    private void mergeWithLeftSibling(int childIndx) { // DELETE
         BNode rightChild = childrenList.get(childIndx);
         BNode leftChild = childrenList.get(childIndx - 1);
         rightChild.blocksList.add(0, getBlockAt(childIndx - 1));
@@ -396,15 +396,12 @@ public class BNode implements BNodeInterface {
     private void mergeWithRightSibling(int childIndx) {
         BNode leftChild = childrenList.get(childIndx);
         BNode rightChild = childrenList.get(childIndx + 1);
-        leftChild.blocksList.add(getBlockAt(childIndx));
+        leftChild.blocksList.add(leftChild.numOfBlocks, getBlockAt(childIndx));
         blocksList.remove(childIndx);
         numOfBlocks--;
 
-        for (int i = 0; i < rightChild.numOfBlocks; i++) {
-            leftChild.blocksList.add(rightChild.getBlockAt(i));
-            leftChild.childrenList.add(rightChild.getChildAt(i));
-        }
-        leftChild.childrenList.add(rightChild.getChildAt(rightChild.numOfBlocks));
+        leftChild.blocksList.addAll(rightChild.blocksList);
+        leftChild.childrenList.addAll(rightChild.childrenList);
         leftChild.numOfBlocks += rightChild.numOfBlocks + 1;
         childrenList.remove(childIndx + 1); // remove rightChild
     }
