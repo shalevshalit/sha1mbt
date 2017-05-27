@@ -347,18 +347,18 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void mergeWithRightSibling(int childIndx) {
-        BNode rightChild = childrenList.get(childIndx);
-        BNode leftChild = childrenList.get(childIndx - 1);
-        rightChild.blocksList.add(0, getBlockAt(childIndx - 1));
-        blocksList.remove(childIndx - 1);
+        BNode leftChild = childrenList.get(childIndx);
+        BNode rightChild = childrenList.get(childIndx + 1);
+        leftChild.blocksList.add(getBlockAt(childIndx));
+        blocksList.remove(childIndx);
         numOfBlocks--;
 
-        for (int i = 0; i < leftChild.numOfBlocks; i++) {
-            rightChild.blocksList.add(i, leftChild.getBlockAt(i));
-            rightChild.childrenList.add(i, leftChild.getChildAt(i));
+        for (int i = 0; i < rightChild.numOfBlocks; i++) {
+            leftChild.blocksList.add(rightChild.getBlockAt(i));
+            leftChild.childrenList.add(rightChild.getChildAt(i));
         }
-        rightChild.childrenList.add(leftChild.numOfBlocks, leftChild.getChildAt(leftChild.numOfBlocks));
-        childrenList.remove(childIndx - 1); // remove leftChild
+        leftChild.childrenList.add(rightChild.getChildAt(rightChild.numOfBlocks));
+        childrenList.remove(childIndx + 1); // remove leftChild
     }
 
     /**
