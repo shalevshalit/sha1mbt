@@ -232,8 +232,22 @@ public class BNode implements BNodeInterface {
 
     @Override
     public MerkleBNode createHashNode() {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<MerkleBNode> merkleChildren = new ArrayList<MerkleBNode>(numOfBlocks + 1);
+        ArrayList<byte[]> bytes = new ArrayList<byte[]>(numOfBlocks);
+        for (int i = 0; i < numOfBlocks; i++) {
+            if (!isLeaf) {
+                MerkleBNode child = getChildAt(i).createHashNode();
+                merkleChildren.add(child);
+                bytes.add(child.getHashValue());
+            }
+            bytes.add(getBlockAt(i).getData());
+        }
+        if (!isLeaf) {
+            MerkleBNode child = getChildAt(numOfBlocks).createHashNode();
+            merkleChildren.add(child);
+            bytes.add(child.getHashValue());
+        }
+        return new MerkleBNode(HashUtils.sha1Hash(bytes), isLeaf, merkleChildren);
     }
 
 
