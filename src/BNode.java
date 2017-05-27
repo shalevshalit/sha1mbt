@@ -313,10 +313,11 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void mergeChildWithSibling(int childIndx) {
-        if (!childHasNonMinimalLeftSibling(childIndx))
-            mergeWithLeftSibling(childIndx);
-        else if (!childHasNonMinimalRightSibling(childIndx))
+        if(childIndx==0)
             mergeWithRightSibling(childIndx);
+        else if (!childHasNonMinimalLeftSibling(childIndx-1))
+            mergeWithLeftSibling(childIndx);
+        else mergeWithRightSibling(childIndx);
     }
 
     /**
