@@ -233,7 +233,7 @@ public class BNode implements BNodeInterface {
     @Override
     public MerkleBNode createHashNode() {
         ArrayList<MerkleBNode> merkleChildren = new ArrayList<MerkleBNode>(numOfBlocks + 1);
-        ArrayList<byte[]> bytes = new ArrayList<byte[]>(numOfBlocks);
+        ArrayList<byte[]> bytes = new ArrayList<>(numOfBlocks);
         for (int i = 0; i <= numOfBlocks; i++) {
             if (!isLeaf) {
                 MerkleBNode child = getChildAt(i).createHashNode();
