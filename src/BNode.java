@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 //SUBMIT
 public class BNode implements BNodeInterface {
@@ -193,8 +194,38 @@ public class BNode implements BNodeInterface {
 
     @Override
     public void delete(int key) {
-        // TODO Auto-generated method stub
+        int i = 0;
+        while (i < numOfBlocks && getBlockKeyAt(i) < key)
+            i++;
 
+        if (isLeaf) {
+            if (getBlockKeyAt(i) == key) {
+                blocksList.remove(i);
+                numOfBlocks--;
+            }
+        } else {
+            if (getBlockKeyAt(i) == key) {
+                BNode leftChild = getChildAt(i); // TODO check if child exists
+                BNode rightChild = getChildAt(i + 1); // TODO check if child exists
+
+                if (leftChild.isMinSize() && rightChild.isMinSize())
+                    mergeChildWithSibling(i);
+
+                if (!leftChild.isMinSize()) {
+                    Block childMax = leftChild.getMaxKeyBlock();
+                    blocksList.remove(i);
+                    blocksList.add(i, childMax);
+                    leftChild.delete(childMax.getKey());
+                } else {
+                    Block childMin = rightChild.getMinKeyBlock();
+                    blocksList.remove(i);
+                    blocksList.add(i, childMin);
+                    rightChild.delete(childMin.getKey());
+                }
+            } else {
+                getChildAt(i).delete(key);
+            }
+        }
     }
 
     @Override
@@ -313,9 +344,9 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void mergeChildWithSibling(int childIndx) {
-        if(childIndx==0)
+        if (childIndx == 0)
             mergeWithRightSibling(childIndx);
-        else if (!childHasNonMinimalLeftSibling(childIndx-1))
+        else if (!childHasNonMinimalLeftSibling(childIndx - 1))
             mergeWithLeftSibling(childIndx);
         else mergeWithRightSibling(childIndx);
     }
