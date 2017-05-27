@@ -326,12 +326,18 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void mergeWithLeftSibling(int childIndx) {
-        BNode child = childrenList.get(childIndx);
-        BNode leftSibling = childrenList.get(childIndx - 1);
-        // TODO add father
-        for (int i = 0; i < leftSibling.getNumOfBlocks(); i++)
-            child.getBlocksList().add(i, leftSibling.getBlockAt(i));
-        childrenList.remove(childIndx - 1); // remove leftSibling
+        BNode rightChild = childrenList.get(childIndx);
+        BNode leftChild = childrenList.get(childIndx - 1);
+        rightChild.blocksList.add(0, getBlockAt(childIndx - 1));
+        blocksList.remove(childIndx - 1);
+        numOfBlocks--;
+
+        for (int i = 0; i < leftChild.numOfBlocks; i++) {
+            rightChild.blocksList.add(i, leftChild.getBlockAt(i));
+            rightChild.childrenList.add(i, leftChild.getChildAt(i));
+        }
+        rightChild.childrenList.add(leftChild.numOfBlocks, leftChild.getChildAt(leftChild.numOfBlocks));
+        childrenList.remove(childIndx - 1); // remove leftChild
     }
 
     /**
@@ -341,12 +347,18 @@ public class BNode implements BNodeInterface {
      * @param childIndx
      */
     private void mergeWithRightSibling(int childIndx) {
-        BNode child = childrenList.get(childIndx);
-        BNode rightSibling = childrenList.get(childIndx + 1);
-        // TODO add father
-        for (int i = 0; i < rightSibling.getNumOfBlocks(); i++)
-            child.getBlocksList().add(rightSibling.getBlockAt(i));
-        childrenList.remove(childIndx + 1); // remove rightSibling
+        BNode rightChild = childrenList.get(childIndx);
+        BNode leftChild = childrenList.get(childIndx - 1);
+        rightChild.blocksList.add(0, getBlockAt(childIndx - 1));
+        blocksList.remove(childIndx - 1);
+        numOfBlocks--;
+
+        for (int i = 0; i < leftChild.numOfBlocks; i++) {
+            rightChild.blocksList.add(i, leftChild.getBlockAt(i));
+            rightChild.childrenList.add(i, leftChild.getChildAt(i));
+        }
+        rightChild.childrenList.add(leftChild.numOfBlocks, leftChild.getChildAt(leftChild.numOfBlocks));
+        childrenList.remove(childIndx - 1); // remove leftChild
     }
 
     /**
