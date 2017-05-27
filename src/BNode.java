@@ -234,18 +234,14 @@ public class BNode implements BNodeInterface {
     public MerkleBNode createHashNode() {
         ArrayList<MerkleBNode> merkleChildren = new ArrayList<MerkleBNode>(numOfBlocks + 1);
         ArrayList<byte[]> bytes = new ArrayList<byte[]>(numOfBlocks);
-        for (int i = 0; i < numOfBlocks; i++) {
+        for (int i = 0; i <= numOfBlocks; i++) {
             if (!isLeaf) {
                 MerkleBNode child = getChildAt(i).createHashNode();
                 merkleChildren.add(child);
                 bytes.add(child.getHashValue());
             }
-            bytes.add(getBlockAt(i).getData());
-        }
-        if (!isLeaf) {
-            MerkleBNode child = getChildAt(numOfBlocks).createHashNode();
-            merkleChildren.add(child);
-            bytes.add(child.getHashValue());
+            if (i < numOfBlocks)
+                bytes.add(getBlockAt(i).getData());
         }
         return new MerkleBNode(HashUtils.sha1Hash(bytes), isLeaf, merkleChildren);
     }
