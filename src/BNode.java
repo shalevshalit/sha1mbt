@@ -200,7 +200,6 @@ public class BNode implements BNodeInterface {
         int i = 0;
         while (i < numOfBlocks && getBlockKeyAt(i) < key)
             i++;
-
         if (isLeaf) {
             if (i < numOfBlocks && getBlockKeyAt(i) == key) {
                 blocksList.remove(i);
@@ -225,7 +224,19 @@ public class BNode implements BNodeInterface {
                     rightChild.delete(childMin.getKey());
                 }
             } else {
-                getChildAt(i).delete(key);
+                BNode child = getChildAt(i);
+                if (child.isMinSize()){
+                    if(childHasNonMinimalLeftSibling(i)){
+                        shiftFromLeftSibling(i);
+                    }
+                    else if(childHasNonMinimalRightSibling(i)){
+                        shiftFromRightSibling(i);
+                    }
+                    else
+                        mergeChildWithSibling(i);
+                }
+                child.delete(key);
+
             }
         }
     }
@@ -357,7 +368,7 @@ public class BNode implements BNodeInterface {
      *
      * @param childIndx
      */
-    private void mergeChildWithSibling(int childIndx) {
+    public void mergeChildWithSibling(int childIndx) {
         if (childIndx == 0)
             mergeWithRightSibling(childIndx);
         else if (!childHasNonMinimalLeftSibling(childIndx - 1))
