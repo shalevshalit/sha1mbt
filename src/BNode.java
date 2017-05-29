@@ -225,18 +225,15 @@ public class BNode implements BNodeInterface {
                 }
             } else {
                 BNode child = getChildAt(i);
-                if (child.isMinSize()){
-                    if(childHasNonMinimalLeftSibling(i)){
+                if (child.isMinSize()) {
+                    if (childHasNonMinimalLeftSibling(i))
                         shiftFromLeftSibling(i);
-                    }
-                    else if(childHasNonMinimalRightSibling(i)){
+                    else if (childHasNonMinimalRightSibling(i))
                         shiftFromRightSibling(i);
-                    }
                     else
                         mergeChildWithSibling(i);
                 }
                 child.delete(key);
-
             }
         }
     }
@@ -268,9 +265,11 @@ public class BNode implements BNodeInterface {
         BNode newChild = new BNode(t, child.isLeaf, t - 1);
         for (int i = 0; i < t - 1; i++)
             newChild.blocksList.add(child.blocksList.remove(t));
-        if (!child.isLeaf)
-            for (int j = 0; j < t; j++)
+        if (!child.isLeaf) {
+            for (int j = 0; j < t; j++) {
                 newChild.childrenList.add(child.childrenList.remove(t));
+            }
+        }
 
         blocksList.add(childIndex, child.blocksList.remove(t - 1));
         childrenList.add(childIndex + 1, newChild);
@@ -299,16 +298,6 @@ public class BNode implements BNodeInterface {
     }
 
     /**
-     * Verifies the child node at childIndx has at least t blocks.<br>
-     * If necessary a shift or merge is performed.
-     *
-     * @param childIndx
-     */
-    private void shiftOrMergeChildIfNeeded(int childIndx) {
-
-    }
-
-    /**
      * Add additional block to the child node at childIndx, by shifting from left sibling.
      *
      * @param childIndx
@@ -318,19 +307,21 @@ public class BNode implements BNodeInterface {
         BNode leftChild = getChildAt(childIndx - 1);
 
         // move parent block to right child
-        Block parentMovingBlock = getBlockAt(childIndx);
+        Block parentMovingBlock = getBlockAt(childIndx - 1);
         rightChild.blocksList.add(0, parentMovingBlock);
-        blocksList.remove(childIndx);
+        blocksList.remove(childIndx - 1);
         rightChild.numOfBlocks++;
 
-        // move left max child to min right child
-        BNode leftChildMaxChild = leftChild.getChildAt(leftChild.numOfBlocks);
-        rightChild.childrenList.add(0, leftChildMaxChild);
-        leftChild.childrenList.remove(leftChild.numOfBlocks);
+        if (!leftChild.isLeaf) {
+            // move left max child to min right child
+            BNode leftChildMaxChild = leftChild.getChildAt(leftChild.numOfBlocks);
+            rightChild.childrenList.add(0, leftChildMaxChild);
+            leftChild.childrenList.remove(leftChild.numOfBlocks);
+        }
 
         // move left max block to parent
         Block leftChildMaxBlock = leftChild.getBlockAt(leftChild.numOfBlocks - 1);
-        blocksList.add(childIndx, leftChildMaxBlock);
+        blocksList.add(childIndx - 1, leftChildMaxBlock);
         leftChild.blocksList.remove(leftChild.numOfBlocks - 1);
         leftChild.numOfBlocks--;
     }
@@ -350,10 +341,12 @@ public class BNode implements BNodeInterface {
         blocksList.remove(childIndx);
         leftChild.numOfBlocks++;
 
-        // move right min child to max right child
-        BNode rightChildMinChild = rightChild.getChildAt(0);
-        leftChild.childrenList.add(leftChild.numOfBlocks, rightChildMinChild);
-        rightChild.childrenList.remove(0);
+        if (!rightChild.isLeaf) {
+            // move right min child to max right child
+            BNode rightChildMinChild = rightChild.getChildAt(0);
+            leftChild.childrenList.add(leftChild.numOfBlocks, rightChildMinChild);
+            rightChild.childrenList.remove(0);
+        }
 
         // move right min block to parent
         Block rightChildMinBlock = rightChild.getBlockAt(0);
@@ -371,7 +364,7 @@ public class BNode implements BNodeInterface {
     public void mergeChildWithSibling(int childIndx) {
         if (childIndx == 0)
             mergeWithRightSibling(childIndx);
-        else if (!childHasNonMinimalLeftSibling(childIndx - 1))
+        else if (!childHasNonMinimalLeftSibling(childIndx))
             mergeWithLeftSibling(childIndx);
         else mergeWithRightSibling(childIndx);
     }
@@ -389,11 +382,12 @@ public class BNode implements BNodeInterface {
         blocksList.remove(childIndx - 1);
         numOfBlocks--;
 
-        for (int i = 0; i < leftChild.numOfBlocks; i++) {
-            rightChild.blocksList.add(i, leftChild.getBlockAt(i));
-            rightChild.childrenList.add(i, leftChild.getChildAt(i));
+        for (int i = 0; i <= leftChild.numOfBlocks; i++) {
+            if (i != leftChild.numOfBlocks)
+                rightChild.blocksList.add(i, leftChild.getBlockAt(i));
+            if (!leftChild.isLeaf)
+                rightChild.childrenList.add(i, leftChild.getChildAt(i));
         }
-        rightChild.childrenList.add(leftChild.numOfBlocks, leftChild.getChildAt(leftChild.numOfBlocks));
         rightChild.numOfBlocks += leftChild.numOfBlocks + 1;
         childrenList.remove(childIndx - 1); // remove leftChild
     }
