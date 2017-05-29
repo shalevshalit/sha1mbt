@@ -212,9 +212,10 @@ public class BNode implements BNodeInterface {
                 BNode leftChild = getChildAt(i);
                 BNode rightChild = getChildAt(i + 1);
 
-                if (leftChild.isMinSize() && rightChild.isMinSize())
+                if (leftChild.isMinSize() && rightChild.isMinSize()) {
                     mergeWithRightSibling(i);
-                else if (!leftChild.isMinSize()) {
+                    leftChild.delete(key);
+                }else if (!leftChild.isMinSize()) {
                     Block childMax = leftChild.getMaxKeyBlock();
                     blocksList.remove(i);
                     blocksList.add(i, childMax);
@@ -339,7 +340,7 @@ public class BNode implements BNodeInterface {
 
         // move parent block to left child
         Block parentMovingBlock = getBlockAt(childIndx);
-        leftChild.blocksList.add(leftChild.numOfBlocks - 1, parentMovingBlock);
+        leftChild.blocksList.add(leftChild.numOfBlocks, parentMovingBlock);
         blocksList.remove(childIndx);
         leftChild.numOfBlocks++;
 

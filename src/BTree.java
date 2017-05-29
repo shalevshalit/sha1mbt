@@ -88,14 +88,13 @@ public class BTree implements BTreeInterface {
 
     @Override
     public void delete(int key) {
-        if (root==null)
+        if (root == null)
             return;
-        else if (root.getNumOfBlocks()==1 && root.getChildAt(0).isMinSize() && root.getChildAt(1).isMinSize()){
-                root.mergeChildWithSibling(0);
-                this.root=root.getChildAt(0);
-            }
-        else
-            root.delete(key);
+        else if (root.getNumOfBlocks() == 1 && !root.isLeaf() && root.getChildAt(0).isMinSize() && root.getChildAt(1).isMinSize()) {
+            root.mergeChildWithSibling(0);
+            this.root = root.getChildAt(0);
+        }
+        root.delete(key);
 
     }
 
