@@ -180,8 +180,10 @@ public class BNode implements BNodeInterface {
             i++;
 
         if (isLeaf) {
-            blocksList.add(i, b);
-            numOfBlocks++;
+            if (i == numOfBlocks || getBlockKeyAt(i) != b.getKey()) {
+                blocksList.add(i, b);
+                numOfBlocks++;
+            }
         } else {
             if (getChildAt(i).isFull()) {
                 splitChild(i);
