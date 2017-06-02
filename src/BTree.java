@@ -66,31 +66,36 @@ public class BTree implements BTreeInterface {
 
     @Override
     public Block search(int key) {
-        if (root == null)
+        if (root == null) // if empty tree return null
             return null;
         else
-            return this.root.search(key);
+            return this.root.search(key); // recursively search from root
     }
 
     @Override
     public void insert(Block b) {
-        if (root == null)
+        if (root == null) // if empty tree set root to b
             root = new BNode(t, b);
         else {
-            if (root.isFull()) {
+            if (root.isFull()) { // if root is full, split and set newRoot
                 BNode newRoot = new BNode(t, root);
                 newRoot.splitChild(0);
                 root = newRoot;
             }
-            root.insertNonFull(b);
+            root.insertNonFull(b); // recursively insert b from root
         }
     }
 
     @Override
     public void delete(int key) {
-        if (root == null)
+        if (root == null) // if tree is empty no node to delete
             return;
-        else if (root.getNumOfBlocks() == 1 && !root.isLeaf() && root.getChildAt(0).isMinSize() && root.getChildAt(1).isMinSize()) {
+
+        // if root need to be merge, merge it and than delete
+        if (root.getNumOfBlocks() == 1 &&
+                !root.isLeaf() &&
+                root.getChildAt(0).isMinSize() &&
+                root.getChildAt(1).isMinSize()) {
             root.mergeChildWithSibling(0);
             this.root = root.getChildAt(0);
         }
